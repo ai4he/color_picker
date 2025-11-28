@@ -1,0 +1,554 @@
+/**
+ * Enhanced Features CSS
+ * Tooltips, Palette Library, Consistency Tracker UI
+ * 
+ * Created by: Frederick Gyasi & Austin LaHue
+ */
+
+/* ============================================
+   TOOLTIP STYLES
+   ============================================ */
+
+#tooltip-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10000;
+}
+
+.rich-tooltip {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.95);
+    color: white;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    max-width: 300px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(-5px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index: 10001;
+}
+
+.rich-tooltip.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.rich-tooltip::before {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid rgba(0, 0, 0, 0.95);
+}
+
+.tooltip-content {
+    line-height: 1.6;
+}
+
+.tooltip-title {
+    font-weight: bold;
+    font-size: 1rem;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.tooltip-hex,
+.tooltip-rgb,
+.tooltip-hsl,
+.tooltip-rating,
+.tooltip-comparisons,
+.tooltip-winrate {
+    margin: 4px 0;
+    font-family: 'Courier New', monospace;
+}
+
+.tooltip-description {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.tooltip-action {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 0.85rem;
+    color: #4A90E2;
+    font-style: italic;
+}
+
+/* ============================================
+   PALETTE LIBRARY UI
+   ============================================ */
+
+.palette-library-section {
+    background: var(--surface-color);
+    border-radius: 12px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: var(--shadow-sm);
+}
+
+.palette-library-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.palette-library-controls {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.palette-search {
+    flex: 1;
+    min-width: 250px;
+    padding: 10px 15px;
+    border: 2px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+.palette-search:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.palette-filter {
+    padding: 10px 15px;
+    border: 2px solid var(--border-color);
+    border-radius: 6px;
+    background: white;
+    cursor: pointer;
+}
+
+.palette-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.palette-card {
+    background: white;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    padding: 20px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.palette-card:hover {
+    border-color: var(--primary-color);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.palette-card.favorite {
+    border-color: #FFD700;
+    background: linear-gradient(135deg, #FFF9E6 0%, white 100%);
+}
+
+.palette-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 15px;
+}
+
+.palette-name {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: var(--text-primary);
+    margin: 0;
+    flex: 1;
+}
+
+.palette-favorite-icon {
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.palette-favorite-icon:hover {
+    transform: scale(1.2);
+}
+
+.palette-favorite-icon.active {
+    color: #FFD700;
+}
+
+.palette-description {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+    line-height: 1.4;
+    max-height: 3em;
+    overflow: hidden;
+}
+
+.palette-colors-preview {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 15px;
+    height: 40px;
+}
+
+.palette-color-swatch {
+    flex: 1;
+    border-radius: 4px;
+    min-width: 20px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.palette-color-swatch:hover {
+    transform: scale(1.1);
+    z-index: 10;
+}
+
+.palette-metadata {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 15px;
+}
+
+.palette-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 15px;
+}
+
+.palette-tag {
+    background: var(--primary-color);
+    color: white;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+.palette-tag:hover {
+    opacity: 0.8;
+}
+
+.palette-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: space-between;
+}
+
+.palette-action-btn {
+    flex: 1;
+    padding: 8px;
+    border: none;
+    border-radius: 4px;
+    background: var(--border-color);
+    color: var(--text-primary);
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+}
+
+.palette-action-btn:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+.palette-action-btn.danger:hover {
+    background: var(--danger-color);
+}
+
+.palette-empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-secondary);
+}
+
+.palette-empty-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    opacity: 0.3;
+}
+
+/* ============================================
+   CONSISTENCY TRACKER UI
+   ============================================ */
+
+.consistency-section {
+    background: var(--surface-color);
+    border-radius: 12px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: var(--shadow-sm);
+}
+
+.consistency-score {
+    text-align: center;
+    padding: 40px;
+    background: linear-gradient(135deg, #4A90E2, #7B68EE);
+    border-radius: 8px;
+    color: white;
+    margin-bottom: 30px;
+}
+
+.consistency-score-value {
+    font-size: 4rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.consistency-score-label {
+    font-size: 1.2rem;
+    opacity: 0.9;
+}
+
+.consistency-target {
+    margin-top: 15px;
+    font-size: 0.9rem;
+}
+
+.consistency-target.met {
+    color: #4CAF50;
+}
+
+.consistency-target.not-met {
+    color: #FFD700;
+}
+
+.consistency-sessions {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.consistency-session-card {
+    background: #F8F9FA;
+    padding: 20px;
+    border-radius: 8px;
+    border-left: 4px solid var(--primary-color);
+}
+
+.consistency-session-date {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.consistency-session-stats {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.consistency-pairwise {
+    margin-top: 30px;
+}
+
+.consistency-comparison {
+    background: #F8F9FA;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.consistency-comparison-sessions {
+    flex: 1;
+}
+
+.consistency-comparison-score {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+/* ============================================
+   MODAL DIALOGS
+   ============================================ */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.modal-overlay.show {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.modal-dialog {
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-lg);
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+}
+
+.modal-overlay.show .modal-dialog {
+    transform: scale(1);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.modal-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--text-primary);
+}
+
+.modal-close {
+    font-size: 2rem;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: color 0.2s ease;
+    background: none;
+    border: none;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-close:hover {
+    color: var(--text-primary);
+}
+
+.modal-body {
+    margin-bottom: 20px;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding-top: 15px;
+    border-top: 2px solid var(--border-color);
+}
+
+/* Form styles for modals */
+.form-field {
+    margin-bottom: 20px;
+}
+
+.form-field label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.form-field input[type="text"],
+.form-field textarea {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 1rem;
+    font-family: inherit;
+}
+
+.form-field input[type="text"]:focus,
+.form-field textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+/* ============================================
+   RESPONSIVE ADJUSTMENTS
+   ============================================ */
+
+@media (max-width: 768px) {
+    .palette-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .consistency-sessions {
+        grid-template-columns: 1fr;
+    }
+    
+    .palette-library-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .modal-dialog {
+        margin: 20px;
+        max-width: calc(100% - 40px);
+    }
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+@keyframes slideInUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.palette-card,
+.consistency-session-card {
+    animation: slideInUp 0.3s ease forwards;
+}
+
+.palette-card:nth-child(1) { animation-delay: 0s; }
+.palette-card:nth-child(2) { animation-delay: 0.05s; }
+.palette-card:nth-child(3) { animation-delay: 0.1s; }
+.palette-card:nth-child(4) { animation-delay: 0.15s; }
+.palette-card:nth-child(5) { animation-delay: 0.2s; }
+.palette-card:nth-child(6) { animation-delay: 0.25s; }
