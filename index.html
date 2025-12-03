@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Preference Picker</title>
+    <link rel="stylesheet" href="src/picker-styles.css">
+    <link rel="stylesheet" href="src/enhanced-features.css">
+    <style>
+        /* IMPORTANT: Clemson colors are ONLY for interface design */
+        /* The color picker generates 200 diverse colors independently */
+        /* Interface colors: Clemson Orange (#F66733) and Purple (#522D80) */
+
+        /* Consolidated Top Colors Section */
+        .top-colors-section {
+            background: var(--surface-color);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .top-colors-header {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .top-colors-header h2 {
+            color: #F66733;
+            margin: 0;
+            font-size: 1.25rem;
+        }
+
+        .top-colors-description {
+            color: #7F8C8D;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        .top-colors-container {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+            min-height: 100px;
+            padding: 16px;
+            background: #FAFBFC;
+            border-radius: 8px;
+        }
+
+        .top-colors-container .color-item {
+            position: relative;
+        }
+
+        .top-colors-container .top-five-rank {
+            position: absolute;
+            top: -8px;
+            left: -8px;
+            background: #F66733;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.75rem;
+            box-shadow: var(--shadow-sm);
+            z-index: 10;
+        }
+
+        .top-colors-section .export-section {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .top-colors-section .export-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .top-colors-section .btn-export {
+            padding: 8px 16px;
+            font-size: 0.85rem;
+        }
+
+        .top-colors-empty {
+            text-align: center;
+            padding: 24px;
+            color: #7F8C8D;
+        }
+
+        @media (max-width: 768px) {
+            .top-colors-container {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 8px;
+                padding: 12px;
+            }
+
+            .top-colors-container .top-five-rank {
+                width: 20px;
+                height: 20px;
+                font-size: 0.65rem;
+                top: -6px;
+                left: -6px;
+            }
+        }
+
+        /* Collapsible Sections */
+        .collapsible .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+            padding: 4px 0;
+        }
+
+        .collapsible .section-header h2 {
+            margin: 0;
+        }
+
+        .collapse-indicator {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s ease;
+        }
+
+        .collapsible.collapsed .collapse-indicator {
+            transform: rotate(0deg);
+        }
+
+        .collapsible:not(.collapsed) .collapse-indicator {
+            transform: rotate(45deg);
+        }
+
+        .collapsible .section-content {
+            max-height: 500px;
+            overflow: hidden;
+            transition: max-height 0.3s ease, opacity 0.2s ease, margin 0.3s ease;
+            opacity: 1;
+            margin-top: 16px;
+        }
+
+        .collapsible.collapsed .section-content {
+            max-height: 0;
+            opacity: 0;
+            margin-top: 0;
+        }
+
+        /* High Contrast Mode Improvements */
+        body.high-contrast {
+            --background-color: #000000;
+            --surface-color: #1A1A1A;
+            --text-primary: #FFFFFF;
+            --text-secondary: #FFFFFF;
+            --border-color: #FFFFFF;
+        }
+        
+        body.high-contrast section {
+            border: 3px solid #FFFFFF;
+            background: #1A1A1A;
+        }
+        
+        body.high-contrast h1,
+        body.high-contrast h2,
+        body.high-contrast h3,
+        body.high-contrast label,
+        body.high-contrast p,
+        body.high-contrast li,
+        body.high-contrast .subtitle,
+        body.high-contrast .favorites-description {
+            color: #FFFFFF !important;
+            opacity: 1 !important;
+        }
+        
+        body.high-contrast .app-header {
+            background: #000000;
+            border: 3px solid #FFFFFF;
+        }
+        
+        body.high-contrast .stat-label,
+        body.high-contrast .stat-value,
+        body.high-contrast .progress-text {
+            color: #FFFFFF !important;
+        }
+        
+        body.high-contrast kbd {
+            background: #000000;
+            color: #FFFFFF;
+            border-color: #FFFFFF;
+        }
+        
+        body.high-contrast select,
+        body.high-contrast input[type="text"],
+        body.high-contrast textarea {
+            background: #000000;
+            color: #FFFFFF;
+            border-color: #FFFFFF;
+        }
+        
+        body.high-contrast .analytics-display,
+        body.high-contrast .keyboard-shortcuts,
+        body.high-contrast .evaluating-container,
+        body.high-contrast .favorites-container,
+        body.high-contrast .top-five-container {
+            background: #000000;
+            border: 2px solid #FFFFFF;
+        }
+        
+        body.high-contrast .app-footer,
+        body.high-contrast .app-footer strong,
+        body.high-contrast .app-footer a {
+            color: #FFFFFF !important;
+        }
+        
+        body.high-contrast .attribution {
+            border-top-color: #FFFFFF;
+        }
+        
+        body.high-contrast .modal-dialog {
+            background: #000000;
+            border: 3px solid #FFFFFF;
+        }
+        
+        body.high-contrast .modal-title {
+            color: #FFFFFF !important;
+        }
+        
+        body.high-contrast .form-field label {
+            color: #FFFFFF !important;
+        }
+        
+        body.high-contrast .palette-card,
+        body.high-contrast .consistency-session-card,
+        body.high-contrast .consistency-comparison {
+            background: #000000;
+            border: 2px solid #FFFFFF;
+        }
+        
+        body.high-contrast .palette-name,
+        body.high-contrast .palette-description,
+        body.high-contrast .palette-metadata,
+        body.high-contrast .consistency-session-date,
+        body.high-contrast .consistency-session-stats,
+        body.high-contrast .consistency-comparison-sessions {
+            color: #FFFFFF !important;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .top-five-container {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .final-results-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .top-five-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="app-header">
+            <h1>Interactive Color Preference Picker</h1>
+            <p class="subtitle">Discover your implicit color preferences through algorithmic self-discovery</p>
+        </header>
+
+        <!-- Instructions Section -->
+        <section class="instructions">
+            <h2>How It Works</h2>
+            <ol>
+                <li>For each group of <strong>10 colors</strong>, click one or more of your favorites</li>
+                <li>Press <strong>"Pick"</strong> to select them, or <strong>"Pass"</strong> if you're indifferent</li>
+                <li>After 20+ comparisons, the system will identify your top color preferences</li>
+                <li>Your personalized palette will be ranked by your implicit preferences</li>
+            </ol>
+            <div class="keyboard-shortcuts">
+                <h3>Keyboard Shortcuts</h3>
+                <ul>
+                    <li><kbd>Enter</kbd> - Pick selected colors</li>
+                    <li><kbd>Space</kbd> - Pass on current batch</li>
+                    <li><kbd>Arrow Keys</kbd> - Navigate colors</li>
+                    <li><kbd>Ctrl+Z</kbd> - Undo</li>
+                    <li><kbd>Ctrl+Shift+Z</kbd> - Redo</li>
+                    <li><kbd>Escape</kbd> - Clear selection</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Accessibility Controls -->
+        <section class="accessibility-controls">
+            <h2>Accessibility Settings</h2>
+            <div class="controls-grid">
+                <div class="control-group">
+                    <label for="accessibility-mode">Vision Mode:</label>
+                    <select id="accessibility-mode" class="accessibility-mode">
+                        <option value="full-color">Full Color</option>
+                        <option value="protanopia">Protanopia (Red-Blind)</option>
+                        <option value="deuteranopia">Deuteranopia (Green-Blind)</option>
+                        <option value="tritanopia">Tritanopia (Blue-Blind)</option>
+                    </select>
+                </div>
+                
+                <div class="control-group">
+                    <label>
+                        <input type="checkbox" id="high-contrast" class="high-contrast">
+                        High Contrast Mode
+                    </label>
+                </div>
+                
+                <div class="control-group">
+                    <label>
+                        <input type="checkbox" id="patterns" class="patterns">
+                        Pattern Overlays
+                    </label>
+                </div>
+                
+                <div class="control-group">
+                    <label>
+                        <input type="checkbox" id="audio-descriptions" class="audio-descriptions">
+                        Audio Descriptions
+                    </label>
+                </div>
+            </div>
+        </section>
+
+        <!-- User Identity Section (Collapsible) -->
+        <section class="user-identity-section collapsible collapsed">
+            <div class="section-header" onclick="toggleSection(this)">
+                <h2>User Identity & Data</h2>
+                <span class="collapse-indicator">+</span>
+            </div>
+            <div class="section-content">
+                <div class="user-info-display">
+                    <div class="user-id-group">
+                        <span class="user-id-label">Your User ID:</span>
+                        <code id="user-id-display" class="user-id-value">Loading...</code>
+                        <button id="copy-user-id" class="btn-small btn-tertiary" title="Copy User ID">
+                            📋 Copy
+                        </button>
+                    </div>
+                    <div class="user-sessions-count">
+                        <span class="sessions-label">Sessions Recorded:</span>
+                        <span id="user-sessions-count" class="sessions-value">0</span>
+                    </div>
+                </div>
+                <div class="user-actions">
+                    <button id="reset-user-data" class="btn btn-warning">
+                        🆕 Reset User & Clear All My Data
+                    </button>
+                    <p class="user-action-note">
+                        This will generate a new User ID and clear all your session history.
+                        Your consistency reports will start fresh. This action cannot be undone.
+                    </p>
+                </div>
+                <div class="user-info-explanation">
+                    <p><strong>Why User IDs?</strong> Each person gets a unique ID to keep their color preferences separate.
+                    This ensures consistency reports only compare <em>your</em> sessions, not mixed with others using the same device.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Progress Section (Collapsible) -->
+        <section class="progress-section collapsible collapsed">
+            <div class="section-header" onclick="toggleSection(this)">
+                <h2>Session Progress</h2>
+                <span class="collapse-indicator">+</span>
+            </div>
+            <div class="section-content">
+                <div class="progress-container">
+                    <div class="progress-bar-wrapper">
+                        <div id="progress-bar" class="progress-bar"></div>
+                    </div>
+                    <p id="progress-text" class="progress-text">0 / 20 comparisons</p>
+                </div>
+                <div class="analytics-display">
+                    <div class="stat">
+                        <span class="stat-label">Picks:</span>
+                        <span id="picks-count" class="stat-value">0</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Passes:</span>
+                        <span id="passes-count" class="stat-value">0</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Avg Time:</span>
+                        <span id="avg-time" class="stat-value">0s</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Top 5 Preferences Section -->
+        <!-- Main Picker Section -->
+        <section class="picker-section">
+            <h2>Select Your Preferred Colors</h2>
+            <p style="color: #7F8C8D; margin-bottom: 15px; font-style: italic;">
+                Showing 10 colors at a time from 200 perceptually distinct colors
+            </p>
+            <div id="evaluating" class="evaluating-container" role="group" aria-label="Colors to evaluate"></div>
+            
+            <div class="action-buttons">
+                <button id="pick" class="btn btn-primary">
+                    <span class="btn-icon">✓</span> Pick Selected
+                </button>
+                <button id="pass" class="btn btn-secondary">
+                    <span class="btn-icon">→</span> Pass
+                </button>
+                <button id="undo" class="btn btn-tertiary">
+                    <span class="btn-icon">↶</span> Undo
+                </button>
+                <button id="redo" class="btn btn-tertiary">
+                    <span class="btn-icon">↷</span> Redo
+                </button>
+                <button id="reset" class="btn btn-danger">
+                    <span class="btn-icon">⟲</span> Reset
+                </button>
+            </div>
+        </section>
+
+        <!-- Your Top Colors Section (Consolidated) -->
+        <section class="top-colors-section">
+            <div class="top-colors-header">
+                <h2>Your Top Colors</h2>
+                <p class="top-colors-description">Updates in real-time as you compare</p>
+            </div>
+            <div id="top-five" class="top-colors-container" role="list" aria-label="Your top colors"></div>
+            <div id="favorites" class="favorites-container" style="display: none;"></div>
+
+            <div class="export-section" id="export-section" style="display: none;">
+                <div class="export-buttons">
+                    <button id="export-json" class="btn btn-export">
+                        <span class="btn-icon">📄</span> JSON
+                    </button>
+                    <button id="export-css" class="btn btn-export">
+                        <span class="btn-icon">🎨</span> CSS
+                    </button>
+                    <button id="export-hex" class="btn btn-export">
+                        <span class="btn-icon">📋</span> Hex
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Palette Library Section -->
+        <section class="palette-library-section">
+            <div class="palette-library-header">
+                <h2>Palette Library</h2>
+                <div class="palette-library-controls">
+                    <button id="save-current-palette" class="btn btn-primary">
+                        <span class="btn-icon">💾</span> Save Current Palette
+                    </button>
+                    <button id="show-consistency" class="btn btn-secondary">
+                        <span class="btn-icon">📊</span> View Consistency Report
+                    </button>
+                </div>
+            </div>
+            
+            <div class="palette-library-search">
+                <input type="text" id="palette-search" class="palette-search" placeholder="Search palettes by name, description, or tag...">
+                <select id="palette-sort" class="palette-filter">
+                    <option value="date-new">Newest First</option>
+                    <option value="date-old">Oldest First</option>
+                    <option value="name">Name (A-Z)</option>
+                    <option value="colors">Most Colors</option>
+                    <option value="favorite">Favorites First</option>
+                </select>
+            </div>
+            
+            <div id="palette-grid" class="palette-grid"></div>
+            
+            <div id="palette-empty-state" class="palette-empty-state" style="display: none;">
+                <div class="palette-empty-icon">🎨</div>
+                <h3>No Saved Palettes Yet</h3>
+                <p>Complete a session and save your palette to start building your library!</p>
+            </div>
+        </section>
+
+        <!-- Consistency Tracker Section -->
+        <section id="consistency-section" class="consistency-section" style="display: none;">
+            <h2>Preference Consistency Analysis</h2>
+            <p>Track how consistent your color preferences are across multiple sessions</p>
+            
+            <div id="consistency-score-display"></div>
+            
+            <div id="consistency-sessions-display" class="consistency-sessions"></div>
+            
+            <div id="consistency-pairwise-display" class="consistency-pairwise"></div>
+            
+            <div class="export-section">
+                <h3>Export Reports</h3>
+                <div class="export-buttons">
+                    <button id="export-consistency-json" class="btn btn-export">
+                        <span class="btn-icon">📄</span> Export JSON Report
+                    </button>
+                    <button id="export-consistency-text" class="btn btn-export">
+                        <span class="btn-icon">📝</span> Export Text Report
+                    </button>
+                    <button id="export-consistency-csv" class="btn btn-export">
+                        <span class="btn-icon">📊</span> Export CSV
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Modals -->
+        <div id="save-palette-modal" class="modal-overlay">
+            <div class="modal-dialog">
+                <div class="modal-header">
+                    <h3 class="modal-title">Save Palette</h3>
+                    <button class="modal-close" onclick="closeSavePaletteModal()">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-field">
+                        <label for="palette-name-input">Palette Name *</label>
+                        <input type="text" id="palette-name-input" placeholder="My Beautiful Palette">
+                    </div>
+                    <div class="form-field">
+                        <label for="palette-description-input">Description</label>
+                        <textarea id="palette-description-input" rows="3" placeholder="Optional description..."></textarea>
+                    </div>
+                    <div class="form-field">
+                        <label for="palette-tags-input">Tags (comma-separated)</label>
+                        <input type="text" id="palette-tags-input" placeholder="warm, vibrant, summer">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-tertiary" onclick="closeSavePaletteModal()">Cancel</button>
+                    <button class="btn btn-primary" onclick="confirmSavePalette()">Save Palette</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Survey Section -->
+        <section id="survey-section" class="survey-section" style="display: none;">
+            <h2>Help Us Improve</h2>
+            <form id="feedback-form">
+                <div class="form-group">
+                    <label for="helpfulness">How helpful was this tool?</label>
+                    <div class="rating-input">
+                        <input type="radio" name="helpfulness" value="1" id="rate1">
+                        <label for="rate1">1</label>
+                        <input type="radio" name="helpfulness" value="2" id="rate2">
+                        <label for="rate2">2</label>
+                        <input type="radio" name="helpfulness" value="3" id="rate3">
+                        <label for="rate3">3</label>
+                        <input type="radio" name="helpfulness" value="4" id="rate4">
+                        <label for="rate4">4</label>
+                        <input type="radio" name="helpfulness" value="5" id="rate5">
+                        <label for="rate5">5</label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="satisfaction">Overall satisfaction with the results:</label>
+                    <select id="satisfaction" name="satisfaction">
+                        <option value="">Select...</option>
+                        <option value="very-satisfied">Very Satisfied</option>
+                        <option value="satisfied">Satisfied</option>
+                        <option value="neutral">Neutral</option>
+                        <option value="dissatisfied">Dissatisfied</option>
+                        <option value="very-dissatisfied">Very Dissatisfied</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="use-case">Intended use case:</label>
+                    <select id="use-case" name="use-case">
+                        <option value="">Select...</option>
+                        <option value="game-design">Game Design</option>
+                        <option value="data-viz">Data Visualization</option>
+                        <option value="art">Personal Art/Style</option>
+                        <option value="web-design">Web Design</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="comments">Additional comments (optional):</label>
+                    <textarea id="comments" name="comments" rows="4"></textarea>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Submit Feedback</button>
+            </form>
+        </section>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>
+                <strong>HCC Project:</strong> Algorithmic Self-Discovery for Color Preferences<br>
+                <strong>Team:</strong> Austin LaHue & Frederick Gyasi<br>
+                <strong>Algorithm:</strong> Modified Elo Rating System with Adaptive Pruning<br>
+                <strong>Colors:</strong> 200 perceptually distinct colors generated from HSL color space<br>
+                <strong>Display:</strong> 10 colors per comparison batch
+            </p>
+            <p class="attribution">
+                Inspired by <a href="https://www.dragonflycave.com/favorite.html" target="_blank">Favorite Pokémon Picker</a>
+                | Core architecture based on <a href="https://github.com/antialiasis/favorite-picker" target="_blank">favorite-picker</a>
+            </p>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="src/picker-core.js"></script>
+    <script src="src/picker-ui.js"></script>
+    <script src="src/tooltip-manager.js"></script>
+    <script src="src/consistency-tracker.js"></script>
+    <script src="src/palette-library.js"></script>
+    <script src="src/app-init.js"></script>
+    <script src="src/enhanced-integration.js"></script>
+    <script>
+        function toggleSection(header) {
+            var section = header.closest('.collapsible');
+            section.classList.toggle('collapsed');
+        }
+    </script>
+</body>
+</html>
