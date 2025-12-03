@@ -507,6 +507,17 @@ kbd {
     background: #D32F2F;
 }
 
+.btn-success {
+    background: var(--success-color);
+    color: white;
+    font-weight: 600;
+}
+
+.btn-success:hover {
+    background: #45A049;
+    transform: scale(1.02);
+}
+
 .btn-export {
     background: var(--success-color);
     color: white;
@@ -858,4 +869,118 @@ body.high-contrast .color-item.selected {
     .survey-section {
         display: none;
     }
+}
+/* ============================================
+   USER IDENTITY SECTION
+   ============================================ */
+
+.user-identity-section {
+    border: 2px solid var(--warning-color);
+}
+
+.user-info-display {
+    background: #FFF9E6;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.user-id-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+}
+
+.user-id-label {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.user-id-value {
+    background: white;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    color: var(--secondary-color);
+    border: 1px solid var(--border-color);
+    flex: 1;
+    min-width: 200px;
+}
+
+.btn-small {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.btn-small:hover {
+    transform: scale(1.05);
+}
+
+.user-sessions-count {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.sessions-label {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.sessions-value {
+    background: var(--success-color);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+.user-actions {
+    margin: 20px 0;
+}
+
+.btn-warning {
+    background: var(--warning-color);
+    color: white;
+    font-weight: 600;
+}
+
+.btn-warning:hover {
+    background: #F57C00;
+    transform: scale(1.02);
+}
+
+.user-action-note {
+    margin-top: 10px;
+    padding: 10px;
+    background: #FFF3E0;
+    border-left: 4px solid var(--warning-color);
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    border-radius: 4px;
+}
+
+.user-info-explanation {
+    padding: 15px;
+    background: #E3F2FD;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+.user-info-explanation strong {
+    color: var(--secondary-color);
+}
+
+.user-info-explanation em {
+    color: var(--primary-color);
+    font-style: normal;
+    font-weight: 600;
 }

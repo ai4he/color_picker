@@ -22,9 +22,60 @@
     function ConsistencyTracker(options) {
         this.options = options || {};
         this.storageKey = this.options.storageKey || 'colorPicker_sessionHistory';
+        this.userIdKey = 'colorPicker_userId';
         this.maxSessions = this.options.maxSessions || 10;
+        
+        // Initialize or retrieve user ID
+        this.userId = this.initializeUserId();
         this.sessions = this.loadSessions();
+        
+        console.log('ConsistencyTracker initialized for user:', this.userId);
     }
+
+    // ============================================
+    // USER IDENTIFICATION
+    // ============================================
+
+    ConsistencyTracker.prototype.initializeUserId = function() {
+        try {
+            var existingId = localStorage.getItem(this.userIdKey);
+            if (existingId) {
+                return existingId;
+            }
+            
+            // Generate new user ID
+            var newId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem(this.userIdKey, newId);
+            console.log('New user ID generated:', newId);
+            return newId;
+        } catch (e) {
+            console.error('Failed to initialize user ID:', e);
+            // Fallback to session-only ID
+            return 'user_' + Date.now();
+        }
+    };
+
+    ConsistencyTracker.prototype.getUserId = function() {
+        return this.userId;
+    };
+
+    ConsistencyTracker.prototype.resetUserId = function() {
+        try {
+            var newId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem(this.userIdKey, newId);
+            this.userId = newId;
+            
+            // Clear sessions for old user
+            this.sessions = [];
+            this.saveSessions();
+            
+            console.log('User ID reset. New ID:', newId);
+            return newId;
+        } catch (e) {
+            console.error('Failed to reset user ID:', e);
+            return this.userId;
+        }
+    };
 
     // ============================================
     // SESSION MANAGEMENT
@@ -53,6 +104,7 @@
     ConsistencyTracker.prototype.recordSession = function(sessionData) {
         var session = {
             id: this.generateSessionId(),
+            userId: this.userId,  // Associate session with user
             timestamp: new Date().toISOString(),
             date: new Date().toLocaleDateString(),
             time: new Date().toLocaleTimeString(),
@@ -75,6 +127,7 @@
         }
         
         this.saveSessions();
+        console.log('Session recorded for user', this.userId, '- Total sessions:', this.sessions.length);
         return session;
     };
 
@@ -82,8 +135,23 @@
         return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
     };
 
-    ConsistencyTracker.prototype.getSessions = function() {
+    ConsistencyTracker.prototype.getSessions = function(userId) {
+        // If userId specified, filter by that user
+        if (userId) {
+            return this.sessions.filter(s => s.userId === userId);
+        }
+        // Otherwise return sessions for current user only
+        return this.sessions.filter(s => s.userId === this.userId);
+    };
+
+    ConsistencyTracker.prototype.getAllSessions = function() {
+        // Return all sessions regardless of user
         return this.sessions;
+    };
+
+    ConsistencyTracker.prototype.getUserSessions = function(userId) {
+        // Get sessions for specific user
+        return this.sessions.filter(s => s.userId === userId);
     };
 
     ConsistencyTracker.prototype.getSession = function(sessionId) {
@@ -93,6 +161,13 @@
     ConsistencyTracker.prototype.deleteSession = function(sessionId) {
         this.sessions = this.sessions.filter(s => s.id !== sessionId);
         this.saveSessions();
+    };
+
+    ConsistencyTracker.prototype.clearCurrentUserSessions = function() {
+        // Clear only current user's sessions
+        this.sessions = this.sessions.filter(s => s.userId !== this.userId);
+        this.saveSessions();
+        console.log('Cleared all sessions for user:', this.userId);
     };
 
     ConsistencyTracker.prototype.clearAllSessions = function() {
@@ -187,14 +262,18 @@
     };
 
     ConsistencyTracker.prototype.calculateOverallConsistency = function(options) {
-        if (this.sessions.length < 2) {
+        // Only analyze current user's sessions
+        var userSessions = this.sessions.filter(s => s.userId === this.userId);
+        
+        if (userSessions.length < 2) {
             return {
                 error: 'Need at least 2 sessions for consistency analysis',
-                sessionCount: this.sessions.length
+                sessionCount: userSessions.length,
+                userId: this.userId
             };
         }
         
-        var sessionIds = this.sessions.map(s => s.id);
+        var sessionIds = userSessions.map(s => s.id);
         var pairwiseResults = this.calculatePairwiseConsistency(sessionIds, options);
         
         var totalOverlap = 0;
@@ -209,7 +288,8 @@
         var avgCorrelation = totalCorrelation / pairwiseResults.length;
         
         return {
-            sessionCount: this.sessions.length,
+            userId: this.userId,
+            sessionCount: userSessions.length,
             comparisonCount: pairwiseResults.length,
             averageOverlapPercentage: avgOverlap,
             averageRankCorrelation: avgCorrelation,
@@ -231,6 +311,7 @@
         
         var report = {
             generatedAt: new Date().toISOString(),
+            userId: this.userId,  // Include user ID in report
             summary: {
                 totalSessions: overall.sessionCount,
                 totalComparisons: overall.comparisonCount,

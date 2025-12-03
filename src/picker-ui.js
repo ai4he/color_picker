@@ -524,18 +524,65 @@
     };
 
     PickerUI.prototype.undo = function() {
-        // Undo functionality would need history tracking in the core
-        this.announce("Undo not yet implemented");
+        if (this.state.canUndo()) {
+            this.state.undo();
+            this.update();
+            this.updateProgress();
+            this.updateTopFive();
+            this.updateButtonStates();
+            this.announce("Action undone");
+            console.log('Undo successful');
+        } else {
+            this.announce("Nothing to undo");
+            console.log('Cannot undo: at beginning of history');
+        }
     };
 
     PickerUI.prototype.redo = function() {
-        // Redo functionality would need history tracking in the core
-        this.announce("Redo not yet implemented");
+        if (this.state.canRedo()) {
+            this.state.redo();
+            this.update();
+            this.updateProgress();
+            this.updateTopFive();
+            this.updateButtonStates();
+            this.announce("Action redone");
+            console.log('Redo successful');
+        } else {
+            this.announce("Nothing to redo");
+            console.log('Cannot redo: at end of history');
+        }
+    };
+
+    PickerUI.prototype.updateButtonStates = function() {
+        // Update undo/redo button states
+        if (this.elem.undo) {
+            if (this.state.canUndo()) {
+                this.elem.undo.prop('disabled', false).removeClass('disabled');
+            } else {
+                this.elem.undo.prop('disabled', true).addClass('disabled');
+            }
+        }
+        
+        if (this.elem.redo) {
+            if (this.state.canRedo()) {
+                this.elem.redo.prop('disabled', false).removeClass('disabled');
+            } else {
+                this.elem.redo.prop('disabled', true).addClass('disabled');
+            }
+        }
     };
 
     PickerUI.prototype.reset = function() {
         if (confirm(this.messages.resetWarning)) {
             this.state.reset();
+            
+            // Restore Reset button to original state
+            if (this.elem.reset) {
+                this.elem.reset.html('<span class="btn-icon">⟲</span> Reset')
+                    .removeClass('btn-success')
+                    .addClass('btn-danger');
+            }
+            
             this.update();
             this.updateProgress();
             this.updateTopFive();
@@ -566,6 +613,9 @@
         
         // Update buttons
         this.updateButtons();
+        
+        // Update undo/redo button states
+        this.updateButtonStates();
     };
 
     PickerUI.prototype.displayComplete = function() {
@@ -578,6 +628,13 @@
         if (this.elem.finalResults) {
             this.elem.finalResults.show();
             this.updateFinalResults();
+        }
+        
+        // Change Reset button to "Start New Session" when complete
+        if (this.elem.reset) {
+            this.elem.reset.html('<span class="btn-icon">🎨</span> Start New Session')
+                .removeClass('btn-danger')
+                .addClass('btn-success');
         }
         
         this.announce(this.messages.sessionComplete);

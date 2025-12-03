@@ -186,3 +186,73 @@
         }
     });
 })();
+// ============================================
+// USER IDENTITY UI MANAGEMENT
+// ============================================
+
+$(document).ready(function() {
+    // Wait for consistencyTracker to be available
+    setTimeout(function() {
+        if (window.consistencyTracker) {
+            updateUserIdentityUI();
+            
+            // Copy User ID button
+            $('#copy-user-id').on('click', function() {
+                var userId = window.consistencyTracker.getUserId();
+                navigator.clipboard.writeText(userId).then(function() {
+                    alert('User ID copied to clipboard!');
+                }).catch(function(err) {
+                    console.error('Failed to copy:', err);
+                    alert('User ID: ' + userId);
+                });
+            });
+            
+            // Reset User Data button
+            $('#reset-user-data').on('click', function() {
+                var confirmed = confirm(
+                    'Are you sure you want to reset your user identity?\n\n' +
+                    'This will:\n' +
+                    '• Generate a new User ID\n' +
+                    '• Delete all your session history\n' +
+                    '• Clear consistency tracking data\n' +
+                    '• Start fresh as a new user\n\n' +
+                    'This action CANNOT be undone!'
+                );
+                
+                if (confirmed) {
+                    // Clear current user's sessions
+                    window.consistencyTracker.clearCurrentUserSessions();
+                    
+                    // Generate new user ID
+                    var newUserId = window.consistencyTracker.resetUserId();
+                    
+                    // Update UI
+                    updateUserIdentityUI();
+                    
+                    // Reset picker state
+                    if (window.pickerState) {
+                        window.pickerState.reset();
+                        window.pickerUI.update();
+                        window.pickerUI.updateProgress();
+                        window.pickerUI.updateTopFive();
+                    }
+                    
+                    alert('User identity reset successfully!\n\nNew User ID: ' + newUserId);
+                }
+            });
+            
+            // Update session count periodically
+            setInterval(updateUserIdentityUI, 3000);
+        }
+    }, 1000);
+});
+
+function updateUserIdentityUI() {
+    if (!window.consistencyTracker) return;
+    
+    var userId = window.consistencyTracker.getUserId();
+    var sessions = window.consistencyTracker.getSessions(); // Gets current user's sessions
+    
+    $('#user-id-display').text(userId);
+    $('#user-sessions-count').text(sessions.length);
+}

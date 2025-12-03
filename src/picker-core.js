@@ -205,6 +205,11 @@
         this.evaluating = null;
         this.settings = {};
         this.sessionComplete = false;
+        
+        // Undo/Redo state management
+        this.stateHistory = [];
+        this.historyIndex = -1;
+        this.maxHistorySize = 50;
     }
 
     EloPickerState.prototype.getState = function() {
@@ -251,6 +256,11 @@
         this.analytics.sessionComparisons = 0;
         
         this.nextBatch();
+        
+        // Save initial state for undo/redo
+        this.stateHistory = [];
+        this.historyIndex = -1;
+        this.saveStateToHistory();
     };
 
     EloPickerState.prototype.restoreState = function(state) {
@@ -458,6 +468,9 @@
         } else {
             this.nextBatch();
         }
+        
+        // Save state for undo/redo
+        this.saveStateToHistory();
     };
 
     EloPickerState.prototype.pass = function() {
@@ -489,6 +502,9 @@
         } else {
             this.nextBatch();
         }
+        
+        // Save state for undo/redo
+        this.saveStateToHistory();
     };
 
     EloPickerState.prototype.checkForNewFavorites = function() {
@@ -529,6 +545,60 @@
     EloPickerState.prototype.setFavorites = function(favorites) {
         const colorMap = new Map(this.colors.map(c => [c.id, c]));
         this.favorites = favorites.map(id => colorMap.get(id)).filter(c => c);
+    };
+
+    // ============================================
+    // UNDO/REDO FUNCTIONALITY
+    // ============================================
+
+    EloPickerState.prototype.saveStateToHistory = function() {
+        // Remove any states after current position (for redo after undo)
+        this.stateHistory = this.stateHistory.slice(0, this.historyIndex + 1);
+        
+        // Add current state
+        const state = this.getState();
+        this.stateHistory.push(JSON.parse(JSON.stringify(state)));
+        this.historyIndex++;
+        
+        // Limit history size
+        if (this.stateHistory.length > this.maxHistorySize) {
+            this.stateHistory.shift();
+            this.historyIndex--;
+        }
+    };
+
+    EloPickerState.prototype.canUndo = function() {
+        return this.historyIndex > 0;
+    };
+
+    EloPickerState.prototype.canRedo = function() {
+        return this.historyIndex < this.stateHistory.length - 1;
+    };
+
+    EloPickerState.prototype.undo = function() {
+        if (!this.canUndo()) {
+            console.log('Cannot undo: at beginning of history');
+            return false;
+        }
+        
+        this.historyIndex--;
+        const state = this.stateHistory[this.historyIndex];
+        this.restoreState(state);
+        console.log('Undo successful. History position:', this.historyIndex + 1, '/', this.stateHistory.length);
+        return true;
+    };
+
+    EloPickerState.prototype.redo = function() {
+        if (!this.canRedo()) {
+            console.log('Cannot redo: at end of history');
+            return false;
+        }
+        
+        this.historyIndex++;
+        const state = this.stateHistory[this.historyIndex];
+        this.restoreState(state);
+        console.log('Redo successful. History position:', this.historyIndex + 1, '/', this.stateHistory.length);
+        return true;
     };
 
     // ============================================

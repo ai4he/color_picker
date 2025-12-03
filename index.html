@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Color Preference Picker</title>
-    <link rel="stylesheet" href="picker-styles.css">
-    <link rel="stylesheet" href="enhanced-features.css">
+    <link rel="stylesheet" href="src/picker-styles.css">
+    <link rel="stylesheet" href="src/enhanced-features.css">
     <style>
         /* IMPORTANT: Clemson colors are ONLY for interface design */
         /* The color picker generates 200 diverse colors independently */
@@ -345,6 +345,42 @@
             </div>
         </section>
 
+        <!-- User Identity Section (Collapsible) -->
+        <section class="user-identity-section collapsible collapsed">
+            <div class="section-header" onclick="toggleSection(this)">
+                <h2>User Identity & Data</h2>
+                <span class="collapse-indicator">+</span>
+            </div>
+            <div class="section-content">
+                <div class="user-info-display">
+                    <div class="user-id-group">
+                        <span class="user-id-label">Your User ID:</span>
+                        <code id="user-id-display" class="user-id-value">Loading...</code>
+                        <button id="copy-user-id" class="btn-small btn-tertiary" title="Copy User ID">
+                            📋 Copy
+                        </button>
+                    </div>
+                    <div class="user-sessions-count">
+                        <span class="sessions-label">Sessions Recorded:</span>
+                        <span id="user-sessions-count" class="sessions-value">0</span>
+                    </div>
+                </div>
+                <div class="user-actions">
+                    <button id="reset-user-data" class="btn btn-warning">
+                        🆕 Reset User & Clear All My Data
+                    </button>
+                    <p class="user-action-note">
+                        This will generate a new User ID and clear all your session history.
+                        Your consistency reports will start fresh. This action cannot be undone.
+                    </p>
+                </div>
+                <div class="user-info-explanation">
+                    <p><strong>Why User IDs?</strong> Each person gets a unique ID to keep their color preferences separate.
+                    This ensures consistency reports only compare <em>your</em> sessions, not mixed with others using the same device.</p>
+                </div>
+            </div>
+        </section>
+
         <!-- Progress Section (Collapsible) -->
         <section class="progress-section collapsible collapsed">
             <div class="section-header" onclick="toggleSection(this)">
@@ -587,13 +623,13 @@
 
     <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="picker-core.js"></script>
-    <script src="picker-ui.js"></script>
-    <script src="tooltip-manager.js"></script>
-    <script src="consistency-tracker.js"></script>
-    <script src="palette-library.js"></script>
-    <script src="app-init.js"></script>
-    <script src="enhanced-integration.js"></script>
+    <script src="src/picker-core.js"></script>
+    <script src="src/picker-ui.js"></script>
+    <script src="src/tooltip-manager.js"></script>
+    <script src="src/consistency-tracker.js"></script>
+    <script src="src/palette-library.js"></script>
+    <script src="src/app-init.js"></script>
+    <script src="src/enhanced-integration.js"></script>
     <script>
         function toggleSection(header) {
             var section = header.closest('.collapsible');
