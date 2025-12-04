@@ -570,17 +570,14 @@ Discover your aesthetic:
 ## 🤝 Credits & License
 
 ### Authors
-- **Austin LaHue** - Algorithm design, core implementation
+- **Austin LaHue** - Core implementation
 - **Frederick Gyasi** - UI/UX, accessibility features
 
 ### Institution
-Medical University of South Carolina  
-Biomedical Informatics Center  
-ClinicalNLP Lab
+Clemson University
 
 ### Inspiration
-- Dragonfly Cave's Favorite Pokémon Picker
-- favorite-picker project
+- Dragonfly Cave's Favorite Pokémon Picker (https://www.dragonflycave.com/favorite.html)
 - Elo Rating System (Arpad Elo, 1960)
 
 ### License
